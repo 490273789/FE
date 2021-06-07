@@ -30,7 +30,7 @@ var postorder = function (root) {
   return res
 }
 // b
-var postorder = function (root) {
+var postorder1 = function (root) {
   const res = []
   ;(function (root) {
     if (root !== null) {
@@ -43,7 +43,7 @@ var postorder = function (root) {
   return res
 }
 // c
-var postorder = function (root) {
+var postorder2 = function (root) {
   if (root === null) {
     return []
   }
