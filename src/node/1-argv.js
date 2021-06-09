@@ -29,8 +29,6 @@ const config = process.argv.slice(2).reduce((pre, current, index, arr) => {
 }, {})
 console.log(config)
 
-// 认识一个新的第三方插件：commander 命令行的管家 帮你提供一个--help
-
 // Buffer 缓存区 读取文件 内存中的数据
 // 都是二进制的，在buffer里的数据都是16进制的
 // clearInterval setIntercal
