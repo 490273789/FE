@@ -7,13 +7,29 @@
 // node模块会按照后缀名查找，先查找.js文件是否存在， 然后查找.json文件是否存在
 const path = require('path')
 const fs = require('fs')
+const { runInThisContext } = require('vm')
 function Module(id) {
   this.id = id
   this.exports = {} // 模块的结果
 }
 Module.extensions = {
-  '.js'() {},
-  '.json'() {},
+  '.js'(module) {
+    const script = fs.readFileSync(module.id)
+    const funcStr = Module.wrap[0] + script + Module.wrap[1]
+    const fn = runInThisContext(funcStr)
+    fn.call(module.exports, module, module.exports, req, module.id, path.dirname(module.id))
+  },
+  '.json'(module) {
+    const script = fs.readFileSync(module.id)
+    module.exports = JSON.parse(script)
+  },
+}
+
+Module.wrap = ['(function(module,exports,require,__filename,__dirname){', '})']
+
+Module.prototype.load = function () {
+  const extname = path.extname(this.id)
+  Module.extensions[extname](this)
 }
 Module.resolveFileName = (fileName) => {
   // 把相对路径转化为绝对路径，默认会判断一下是否是绝对路径
@@ -39,7 +55,10 @@ Module.resolveFileName = (fileName) => {
 }
 function req(fileName) {
   let currentPath = Module.resolveFileName(fileName)
-  console.log(currentPath)
+  const module = new Module(currentPath)
+  module.load()
+  return module.exports
 }
 
-req('./a')
+const data = req('./a')
+console.log(data)
